@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signal Advantage | Context Mastery Platform</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.22.10/babel.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
+      overflow-x: hidden;
+    }
+    
+    .signal-gradient {
+      background: linear-gradient(135deg, #4f46e5 0%, #7e22ce 100%);
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    
+    .focus-lens {
+      transition: background 0.3s ease;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+    
+    .animate-pulse-glow {
+      animation: pulse 2s infinite ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-fadeIn {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+    
+    .signal-slider {
+      -webkit-appearance: none;
+      height: 6px;
+      background: linear-gradient(to right, #312e81, #4f46e5, #7e22ce, #a855f7, #ec4899);
+      border-radius: 5px;
+      outline: none;
+    }
+    
+    .signal-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: white;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .tab-indicator {
+      transition: transform 0.3s ease;
+    }
+    
+    .nav-button {
+      transition: all 0.2s ease;
+    }
+    
+    .nav-button:hover {
+      transform: translateY(-2px);
+    }
+    
+    .nav-button:active {
+      transform: translateY(0);
+    }
+    
+    .noise-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      opacity: 0.4;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%237e22ce' fill-opacity='0.1' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
+    }
+    
+    .highlight-text {
+      background: linear-gradient(to right, #a855f7, #ec4899);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 600;
+    }
+    
+    .glow {
+      box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+    }
+    
+    .content-transition {
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .decision-canvas {
+      background: rgba(79, 70, 229, 0.1);
+      border: 1px dashed rgba(168, 85, 247, 0.3);
+    }
+    
+    .signal-strength-indicator {
+      height: 6px;
+      background: linear-gradient(to right, #ef4444, #eab308, #22c55e);
+      border-radius: 3px;
+    }
+    
+    .text-truncate {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+    
+    const SignalAdvantageApp = () => {
+      // App state
+      const [currentView, setCurrentView] = useState("home");
+      const [isLoggedIn, setIsLoggedIn] = useState(false);
+      const [showLoginModal, setShowLoginModal] = useState(false);
+      const [signalStrength, setSignalStrength] = useState(0.4);
+      const [activeTab, setActiveTab] = useState("tools");
+      const [decisionTitle, setDecisionTitle] = useState("");
+      const [contextFactors, setContextFactors] = useState([
+        { id: 1, text: "Market trend indicates 15% shift toward digital-first engagement", relevance: 85 },
+        { id: 2, text: "Internal capability assessment shows 3-month technical debt paydown needed", relevance: 70 },
+        { id: 3, text: "Competitor launched similar feature with poor initial reception", relevance: 60 }
+      ]);
+      const [networkInsights, setNetworkInsights] = useState([
+        { id: 1, domain: "Marketing", insight: "Customer acquisition cost benchmarks shifting dramatically in B2B SaaS due to privacy changes", relevance: 95, author: "Sarah K.", role: "CMO" },
+        { id: 2, domain: "Operations", insight: "Supply chain variability creating 2.8x more volatility in manufacturing, successful companies implementing buffer strategies", relevance: 88, author: "Michael R.", role: "COO" },
+        { id: 3, domain: "Sales", insight: "Enterprise deals closing 40% faster when addressing decision criteria beyond RFP requirements", relevance: 78, author: "David L.", role: "Sales Director" },
+        { id: 4, domain: "Product", insight: "User research shows feature utilization increases 3.2x when onboarding includes contextual guidance", relevance: 92, author: "Jennifer T.", role: "Product Lead" }
+      ]);
+      
+      // Toggle login state for demo purposes
+      const toggleLogin = () => {
+        setIsLoggedIn(!isLoggedIn);
+        setShowLoginModal(false);
+      };
+      
+      // Add a new context factor
+      const addContextFactor = () => {
+        const newFactor = { 
+          id: contextFactors.length + 1, 
+          text: "New context factor", 
+          relevance: 50 
+        };
+        setContextFactors([...contextFactors, newFactor]);
+      };
+      
+      // Update a context factor
+      const updateContextFactor = (id, text, relevance) => {
+        setContextFactors(contextFactors.map(factor => 
+          factor.id === id ? { ...factor, text, relevance } : factor
+        ));
+      };
+      
+      // Remove a context factor
+      const removeContextFactor = (id) => {
+        setContextFactors(contextFactors.filter(factor => factor.id !== id));
+      };
+      
+      // Calculate overall signal strength based on context factors
+      const calculateSignalStrength = () => {
+        if (contextFactors.length === 0) return 0;
+        return contextFactors.reduce((sum, factor) => sum + factor.relevance, 0) / (contextFactors.length * 100);
+      };
+      
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-indigo-900 to-purple-900 text-white overflow-hidden flex flex-col relative">
+          {/* Noise texture overlay */}
+          <div className="noise-bg"></div>
+          
+          {/* Navigation Bar */}
+          <header className="container mx-auto px-4 py-6 relative z-10">
+            <div className="flex justify-between items-center">
+              <div onClick={() => setCurrentView("home")} className="cursor-pointer">
+                <h1 className="text-3xl md:text-4xl font-light tracking-wider flex items-center">
+                  <span className="font-bold">SIGNAL</span> 
+                  <span className="mx-2">ADVANTAGE</span>
+                </h1>
+                <p className="text-sm text-purple-300 mt-1">Context Mastery Platform</p>
+              </div>
+              
+              <div className="flex items-center space-x-3">
+                {isLoggedIn ? (
+                  <>
+                    <button 
+                      onClick={() => setCurrentView("tools")}
+                      className={`px-3 py-2 rounded-lg nav-button hidden md:block ${currentView === "tools" ? 'bg-white text-purple-900' : 'bg-purple-800 bg-opacity-50 hover:bg-opacity-70'}`}
+                    >
+                      My Workspace
+                    </button>
+                    <button 
+                      onClick={() => setCurrentView("network")}
+                      className={`px-3 py-2 rounded-lg nav-button hidden md:block ${currentView === "network" ? 'bg-white text-purple-900' : 'bg-purple-800 bg-opacity-50 hover:bg-opacity-70'}`}
+                    >
+                      Signal Network
+                    </button>
+                    <div className="relative">
+                      <button className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center">
+                        JS
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <a href="#pricing" className="px-3 py-2 rounded-lg nav-button hidden md:block bg-purple-800 bg-opacity-50 hover:bg-opacity-70">
+                      Pricing
+                    </a>
+                    <button 
+                      onClick={() => setShowLoginModal(true)}
+                      className="px-4 py-2 bg-white text-purple-900 rounded-lg font-medium"
+                    >
+                      Login
+                    </button>
+                    <button 
+                      onClick={toggleLogin}
+                      className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg font-medium hover:shadow-lg transition-all duration-300"
+                    >
+                      Try Free
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </header>
+          
+          <main className="flex-1 container mx-auto px-4 py-6 relative z-10">
+            {/* HOME VIEW - Landing Page */}
+            {currentView === "home" && (
+              <div className="max-w-6xl mx-auto">
+                {/* Hero Section */}
+                <div className="py-16 md:py-24 flex flex-col md:flex-row items-center">
+                  <div className="md:w-1/2 mb-10 md:mb-0 md:pr-10">
+                    <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                      Master the <span className="highlight-text">Signal</span> in a World of Noise
+                    </h2>
+                    <p className="text-xl mb-8 text-purple-200">
+                      Signal Advantage helps you identify what truly matters in complex decisions through proven context frameworks and shared expertise.
+                    </p>
+                    <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                      <button 
+                        onClick={toggleLogin}
+                        className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                      >
+                        Start Free Trial
+                      </button>
+                      <a 
+                        href="#how-it-works"
+                        className="px-6 py-3 bg-purple-800 bg-opacity-50 rounded-lg font-medium text-lg hover:bg-opacity-70 transition-all duration-300 text-center"
+                      >
+                        See How It Works
+                      </a>
+                    </div>
+                  </div>
+                  <div className="md:w-1/2 relative">
+                    <div className="glass-card rounded-xl p-6 shadow-xl transform rotate-2 glow">
+                      <div className="p-4 glass-card rounded-lg mb-4">
+                        <div className="flex justify-between items-center mb-2">
+                          <h4 className="font-bold">Decision Context Canvas</h4>
+                          <span className="text-sm text-purple-300">Strategic</span>
+                        </div>
+                        <div className="space-y-3">
+                          <div className="flex items-center">
+                            <div className="w-1 h-12 bg-green-500 rounded-full mr-2"></div>
+                            <div className="flex-1 bg-purple-900 bg-opacity-30 rounded-lg p-2 text-sm">
+                              Market adoption of AI tools accelerating 2.7x faster than forecast
+                            </div>
+                          </div>
+                          <div className="flex items-center">
+                            <div className="w-1 h-12 bg-yellow-500 rounded-full mr-2"></div>
+                            <div className="flex-1 bg-purple-900 bg-opacity-30 rounded-lg p-2 text-sm">
+                              Customer interviews show friction in onboarding process
+                            </div>
+                          </div>
+                          <div className="flex items-center">
+                            <div className="w-1 h-12 bg-green-400 rounded-full mr-2"></div>
+                            <div className="flex-1 bg-purple-900 bg-opacity-30 rounded-lg p-2 text-sm">
+                              Competitor funding signals significant market validation
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mt-4 text-sm text-green-400 font-medium">
+                          Signal Strength: High (87%)
+                        </div>
+                      </div>
+                    </div>
+                    <div className="glass-card rounded-xl p-6 shadow-xl transform -rotate-3 absolute -bottom-10 -left-10 w-72 z-0 opacity-80">
+                      <h4 className="font-bold mb-2">Signal Network</h4>
+                      <div className="text-sm mb-2 text-purple-300">Latest insights from experts</div>
+                      <div className="space-y-2">
+                        <div className="bg-purple-900 bg-opacity-30 rounded-lg p-2 text-sm">
+                          "Decision velocity outperforming analysis depth in current market"
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Key Features Section */}
+                <div id="how-it-works" className="py-16">
+                  <h3 className="text-3xl font-bold text-center mb-12">How Signal Advantage Works</h3>
+                  
+                  <div className="grid md:grid-cols-3 gap-8">
+                    <div className="glass-card rounded-xl p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                      <div className="text-4xl mb-4">🧠</div>
+                      <h4 className="text-xl font-bold mb-2 highlight-text">Decision Context Canvas</h4>
+                      <p className="text-purple-200 mb-4">
+                        Structured frameworks to capture and evaluate the context that matters for your decisions.
+                      </p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start">
+                          <span className="text-green-400 mr-2">✓</span>
+                          <span>Identify high-signal information</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-green-400 mr-2">✓</span>
+                          <span>Evaluate context strength</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-green-400 mr-2">✓</span>
+                          <span>Domain-specific templates</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div className="glass-card rounded-xl p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                      <div className="text-4xl mb-4">🔄</div>
+                      <h4 className="text-xl font-bold mb-2 highlight-text">Signal Network</h4>
+                      <p className="text-purple-200 mb-4">
+                        Tap into high-value insights from experts across domains without the noise.
+                      </p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start">
+                          <span className="text-green-400 mr-2">✓</span>
+                          <span>Curated expert insights</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-green-400 mr-2">✓</span>
+                          <span>Domain-specific signals</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-green-400 mr-2">✓</span>
+                          <span>Relevance-ranked information</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div className="glass-card rounded-xl p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                      <div className="text-4xl mb-4">📊</div>
+                      <h4 className="text-xl font-bold mb-2 highlight-text">Context Mastery System</h4>
+                      <p className="text-purple-200 mb-4">
+                        Develop your ability to identify signal from noise through deliberate practice.
+                      </p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-start">
+                          <span className="text-green-400 mr-2">✓</span>
+                          <span>Signal detection training</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-green-400 mr-2">✓</span>
+                          <span>Decision journaling</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-green-400 mr-2">✓</span>
+                          <span>Context quality feedback</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Testimonials */}
+                <div className="py-16">
+                  <h3 className="text-3xl font-bold text-center mb-12">What Leaders Are Saying</h3>
+                  
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div className="glass-card rounded-xl p-6">
+                      <div className="flex items-start mb-4">
+                        <div className="w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center mr-4">
+                          MJ
+                        </div>
+                        <div>
+                          <h5 className="font-bold">Michael Jennings</h5>
+                          <p className="text-sm text-purple-300">VP Strategy, TechVision Inc</p>
+                        </div>
+                      </div>
+                      <p className="italic text-purple-100">
+                        "Signal Advantage has transformed how our leadership team makes decisions. We're now able to quickly identify what matters in complex situations and move forward with confidence. The context frameworks alone have accelerated our decision velocity by at least 40%."
+                      </p>
+                    </div>
+                    
+                    <div className="glass-card rounded-xl p-6">
+                      <div className="flex items-start mb-4">
+                        <div className="w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center mr-4">
+                          SC
+                        </div>
+                        <div>
+                          <h5 className="font-bold">Sarah Chen</h5>
+                          <p className="text-sm text-purple-300">Product Director, Innovate Solutions</p>
+                        </div>
+                      </div>
+                      <p className="italic text-purple-100">
+                        "As a product leader, I'm bombarded with information daily. Signal Advantage has been game-changing in helping me filter out the noise and focus on the contextual signals that actually matter for product decisions. The Signal Network also delivers insights I wouldn't find elsewhere."
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Pricing Section */}
+                <div id="pricing" className="py-16">
+                  <h3 className="text-3xl font-bold text-center mb-4">Simple, Transparent Pricing</h3>
+                  <p className="text-lg text-center text-purple-200 mb-12">Start mastering context with Signal Advantage</p>
+                  
+                  <div className="max-w-lg mx-auto glass-card rounded-xl p-8 border border-purple-400 shadow-xl">
+                    <div className="flex justify-between items-center mb-6">
+                      <div>
+                        <h4 className="text-2xl font-bold">Professional</h4>
+                        <p className="text-purple-300">Full access to all features</p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-3xl font-bold">$10<span className="text-lg font-normal">/month</span></div>
+                        <p className="text-purple-300">Cancel anytime</p>
+                      </div>
+                    </div>
+                    
+                    <ul className="space-y-3 mb-8">
+                      <li className="flex items-center">
+                        <span className="mr-2 text-green-400">✓</span>
+                        <span>Decision Context Canvas</span>
+                      </li>
+                      <li className="flex items-center">
+                        <span className="mr-2 text-green-400">✓</span>
+                        <span>Signal Network access</span>
+                      </li>
+                      <li className="flex items-center">
+                        <span className="mr-2 text-green-400">✓</span>
+                        <span>Context Mastery exercises</span>
+                      </li>
+                      <li className="flex items-center">
+                        <span className="mr-2 text-green-400">✓</span>
+                        <span>Weekly context insights</span>
+                      </li>
+                      <li className="flex items-center">
+                        <span className="mr-2 text-green-400">✓</span>
+                        <span>Personal decision journal</span>
+                      </li>
+                    </ul>
+                    
+                    <button 
+                      onClick={toggleLogin}
+                      className="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                    >
+                      Start Your Free Trial
+                    </button>
+                    <p className="text-center text-sm mt-3 text-purple-300">No credit card required to start</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {/* TOOLS VIEW - User Workspace */}
+            {currentView === "tools" && isLoggedIn && (
+              <div className="max-w-6xl mx-auto">
+                <div className="mb-8">
+                  <h2 className="text-3xl font-bold mb-4">My Workspace</h2>
+                  
+                  {/* Workspace Tabs */}
+                  <div className="flex border-b border-purple-700 mb-6">
+                    <button
+                      onClick={() => setActiveTab("tools")}
+                      className={`px-6 py-3 ${activeTab === "tools" ? 'text-white font-bold border-b-2 border-white' : 'text-purple-300 hover:text-white'}`}
+                    >
+                      Decision Tools
+                    </button>
+                    <button
+                      onClick={() => setActiveTab("journal")}
+                      className={`px-6 py-3 ${activeTab === "journal" ? 'text-white font-bold border-b-2 border-white' : 'text-purple-300 hover:text-white'}`}
+                    >
+                      Decision Journal
+                    </button>
+                    <button
+                      onClick={() => setActiveTab("training")}
+                      className={`px-6 py-3 ${activeTab === "training" ? 'text-white font-bold border-b-2 border-white' : 'text-purple-300 hover:text-white'}`}
+                    >
+                      Context Training
+                    </button>
+                  </div>
+                  
+                  {/* Decision Tools Tab */}
+                  {activeTab === "tools" && (
+                    <div>
+                      {/* Context Canvas */}
+                      <div className="glass-card rounded-xl p-6 mb-8">
+                        <h3 className="text-2xl font-bold mb-4">Decision Context Canvas</h3>
+                        <p className="text-purple-200 mb-6">
+                          Structure your decision context to identify the signal and filter out the noise.
+                        </p>
+                        
+                        {/* Decision Title */}
+                        <div className="mb-6">
+                          <label className="block text-sm font-medium text-purple-300 mb-2">Decision Title</label>
+                          <input
+                            type="text"
+                            value={decisionTitle}
+                            onChange={(e) => setDecisionTitle(e.target.value)}
+                            placeholder="What decision are you making?"
+                            className="w-full p-3 bg-purple-900 bg-opacity-50 rounded-lg border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          />
+                        </div>
+                        
+                        {/* Context Factors */}
+                        <div className="mb-6">
+                          <div className="flex justify-between items-center mb-2">
+                            <label className="block text-sm font-medium text-purple-300">Context Factors</label>
+                            <button
+                              onClick={addContextFactor}
+                              className="text-sm px-3 py-1 bg-purple-700 rounded-lg hover:bg-purple-600"
+                            >
+                              + Add Factor
+                            </button>
+                          </div>
+                          
+                          <div className="space-y-4">
+                            {contextFactors.map(factor => (
+                              <div key={factor.id} className="flex items-center">
+                                <div 
+                                  className="w-1 h-12 rounded-full mr-2"
+                                  style={{ 
+                                    backgroundColor: factor.relevance > 80 ? '#22c55e' : 
+                                                    factor.relevance > 50 ? '#eab308' : '#ef4444'
+                                  }}
+                                ></div>
+                                <div className="flex-1 decision-canvas rounded-lg p-3 flex items-center">
+                                  <input
+                                    type="text"
+                                    value={factor.text}
+                                    onChange={(e) => updateContextFactor(factor.id, e.target.value, factor.relevance)}
+                                    className="flex-1 bg-transparent border-none focus:outline-none text-white"
+                                  />
+                                  <div className="flex items-center ml-3">
+                                    <span className="text-sm mr-2 text-purple-300 whitespace-nowrap">Relevance:</span>
+                                    <input
+                                      type="range"
+                                      min="0"
+                                      max="100"
+                                      value={factor.relevance}
+                                      onChange={(e) => updateContextFactor(factor.id, factor.text, parseInt(e.target.value))}
+                                      className="w-24 signal-slider"
+                                    />
+                                    <span className="ml-2 text-sm">{factor.relevance}%</span>
+                                    <button
+                                      onClick={() => removeContextFactor(factor.id)}
+                                      className="ml-3 text-red-400 hover:text-red-300"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        {/* Signal Strength */}
+                        <div className="mb-6">
+                          <div className="flex justify-between items-center mb-2">
+                            <label className="block text-sm font-medium text-purple-300">Signal Strength</label>
+                            <span className="text-sm font-medium">{Math.round(calculateSignalStrength() * 100)}%</span>
+                          </div>
+                          <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 transition-all duration-500"
+                              style={{ width: `${calculateSignalStrength() * 100}%` }}
+                            ></div>
+                          </div>
+                          <div className="mt-2 text-sm text-purple-300">
+                            {calculateSignalStrength() < 0.3 ? "Low signal strength. Add more relevant context factors." :
+                             calculateSignalStrength() < 0.7 ? "Moderate signal strength. Consider additional high-relevance factors." :
+                             "Strong signal foundation. You have good context for this decision."}
+                          </div>
+                        </div>
+                        
+                        {/* AI Signal Enhancement - Connected to Claude */}
+                        <div className="glass-card rounded-lg p-4 mb-6 flex items-center">
+                          <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center mr-3">
+                            <span className="text-lg">🤖</span>
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-medium mb-1">AI Signal Enhancement</h4>
+                            <p className="text-sm text-purple-300">Get suggestions for additional context factors based on your decision type.</p>
+                          </div>
+                          <button className="px-4 py-2 bg-purple-700 rounded-lg hover:bg-purple-600 text-sm">
+                            Enhance Context
+                          </button>
+                        </div>
+                        
+                        {/* Template Selection */}
+                        <div className="mb-6">
+                          <label className="block text-sm font-medium text-purple-300 mb-2">Domain Templates</label>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                            {["Strategy", "Marketing", "Product", "Operations", "Research", "Sales", "Leadership", "Finance"].map(domain => (
+                              <button 
+                                key={domain}
+                                className="p-2 text-sm bg-purple-900 bg-opacity-30 rounded-lg hover:bg-opacity-50 border border-purple-700"
+                              >
+                                {domain}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        {/* Action Buttons */}
+                        <div className="flex justify-end space-x-3">
+                          <button className="px-4 py-2 bg-purple-800 bg-opacity-50 rounded-lg hover:bg-opacity-70">
+                            Save as Draft
+                          </button>
+                          <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg font-medium">
+                            Complete Canvas
+                          </button>
+                        </div>
+                      </div>
+                      
+                      {/* Recent Canvases */}
+                      <div className="glass-card rounded-xl p-6">
+                        <h3 className="text-xl font-bold mb-4">Recent Decision Canvases</h3>
+                        <div className="space-y-2">
+                          <div className="flex items-center p-3 bg-purple-900 bg-opacity-30 rounded-lg hover:bg-opacity-50 cursor-pointer">
+                            <div 
+                              className="w-2 h-8 rounded-full mr-3"
+                              style={{ backgroundColor: '#22c55e' }}
+                            ></div>
+                            <div className="flex-1">
+                              <h4 className="font-medium">Product Feature Prioritization Q2</h4>
+                              <p className="text-sm text-purple-300">Last edited 2 days ago • 7 context factors</p>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-sm font-medium text-green-400">85% Signal</div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center p-3 bg-purple-900 bg-opacity-30 rounded-lg hover:bg-opacity-50 cursor-pointer">
+                            <div 
+                              className="w-2 h-8 rounded-full mr-3"
+                              style={{ backgroundColor: '#eab308' }}
+                            ></div>
+                            <div className="flex-1">
+                              <h4 className="font-medium">Marketing Campaign Budget Allocation</h4>
+                              <p className="text-sm text-purple-300">Last edited 5 days ago • 4 context factors</p>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-sm font-medium text-yellow-400">68% Signal</div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center p-3 bg-purple-900 bg-opacity-30 rounded-lg hover:bg-opacity-50 cursor-pointer">
+                            <div 
+                              className="w-2 h-8 rounded-full mr-3"
+                              style={{ backgroundColor: '#ef4444' }}
+                            ></div>
+                            <div className="flex-1">
+                              <h4 className="font-medium">Hiring Plan for Engineering Team</h4>
+                              <p className="text-sm text-purple-300">Last edited 1 week ago • 3 context factors</p>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-sm font-medium text-red-400">42% Signal</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Decision Journal Tab */}
+                  {activeTab === "journal" && (
+                    <div className="glass-card rounded-xl p-6">
+                      <h3 className="text-2xl font-bold mb-4">Decision Journal</h3>
+                      <p className="text-purple-200 mb-6">
+                        Track your decisions, the context that informed them, and reflect on outcomes to improve your signal detection.
+                      </p>
+                      
+                      <div className="mb-6 glass-card rounded-lg p-4 bg-purple-900 bg-opacity-30">
+                        <div className="flex justify-between items-center mb-3">
+                          <h4 className="font-bold">New Pricing Model Decision</h4>
+                          <span className="text-sm text-purple-300">Made 3 months ago</span>
+                        </div>
+                        <div className="mb-3">
+                          <div className="text-sm text-purple-300 mb-1">Context at time of decision:</div>
+                          <ul className="space-y-1 text-sm ml-4">
+                            <li>• Competitor analysis showed 3 major players shifting to usage-based</li>
+                            <li>• Customer interviews indicated willingness to pay for premium features</li>
+                            <li>• Usage data showed wide variance in platform utilization</li>
+                            <li>• Financial projections suggested 18% revenue increase</li>
+                          </ul>
+                        </div>
+                        <div className="mb-3">
+                          <div className="text-sm text-purple-300 mb-1">Signal strength:</div>
+                          <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+                            <div className="h-full bg-yellow-500" style={{ width: '65%' }}></div>
+                          </div>
+                          <div className="flex justify-between text-xs mt-1">
+                            <span>Moderate</span>
+                            <span>65%</span>
+                          </div>
+                        </div>
+                        <div className="mb-3">
+                          <div className="text-sm text-purple-300 mb-1">Outcome reflection:</div>
+                          <p className="text-sm">
+                            Implementation was successful but adoption was slower than projected. Key learning: I underweighted the importance of change management and training. Would add this as a critical context factor in future pricing decisions.
+                          </p>
+                        </div>
+                        <div className="mt-4 flex">
+                          <div className="flex-1 text-sm">
+                            <span className="text-green-400 font-medium">Context skill improvement: </span>
+                            <span>Identified missing context category</span>
+                          </div>
+                          <button className="text-sm text-purple-300 hover:text-white">
+                            View Details →
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-end">
+                        <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg font-medium">
+                          + Record New Decision
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Context Training Tab */}
+                  {activeTab === "training" && (
+                    <div className="glass-card rounded-xl p-6">
+                      <h3 className="text-2xl font-bold mb-4">Context Mastery Training</h3>
+                      <p className="text-purple-200 mb-6">
+                        Develop your ability to identify high-signal information through structured exercises and feedback.
+                      </p>
+                      
+                      <div className="mb-8">
+                        <h4 className="text-lg font-bold mb-3">Signal Detection Exercise</h4>
+                        <div className="glass-card rounded-lg p-4 bg-purple-900 bg-opacity-30 mb-4">
+                          <p className="mb-4">
+                            Below are 10 pieces of information about a product launch decision. Select the 3-4 factors that likely contain the highest signal value.
+                          </p>
+                          
+                          <div className="space-y-3">
+                            {[
+                              { text: "The engineering team is concerned about timeline feasibility", selected: false },
+                              { text: "Early beta testing shows 3.8x higher engagement with new UI", selected: true },
+                              { text: "Marketing team requests 3-week lead time for campaign preparation", selected: false },
+                              { text: "Competitive analysis shows 2 similar products launching next quarter", selected: true },
+                              { text: "The sales team forecasts initial adoption in the enterprise segment", selected: false },
+                              { text: "Customer interviews reveal willingness to pay 40% premium for new capabilities", selected: true },
+                              { text: "Cloud infrastructure costs estimated at $12k monthly", selected: false },
+                              { text: "Design team has completed final mockups", selected: false },
+                              { text: "Focus groups indicate confusion about primary use case", selected: true },
+                              { text: "Legal review completed with no compliance concerns", selected: false }
+                            ].map((item, index) => (
+                              <div key={index} className={`flex items-center p-3 rounded-lg cursor-pointer ${item.selected ? 'bg-purple-700 bg-opacity-50 border border-purple-500' : 'bg-purple-900 bg-opacity-20 hover:bg-opacity-30'}`}>
+                                <div className={`w-5 h-5 rounded border ${item.selected ? 'bg-purple-500 border-purple-300' : 'border-purple-700'} mr-3 flex items-center justify-center`}>
+                                  {item.selected && <span>✓</span>}
+                                </div>
+                                <div className="flex-1">
+                                  <p>{item.text}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          
+                          <div className="mt-6 flex justify-end">
+                            <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg font-medium">
+                              Submit Selections
+                            </button>
+                          </div>
+                        </div>
+                        
+                        <div className="glass-card rounded-lg p-4 bg-green-900 bg-opacity-20 border border-green-700">
+                          <div className="flex items-start">
+                            <div className="w-10 h-10 rounded-full bg-green-800 flex items-center justify-center mr-3">
+                              ✓
+                            </div>
+                            <div>
+                              <h5 className="font-bold">Last Exercise Result: Strong Signal Detection</h5>
+                              <p className="text-sm">
+                                You correctly identified 3/4 high-signal factors. Your ability to spot customer-centric factors is strong, but you may be underweighting competitive information.
+                              </p>
+                              <div className="mt-3 text-sm">
+                                <span className="text-green-400 font-medium">Skill improvement: </span>
+                                <span>Consider multi-dimensional impact when evaluating competitive intelligence</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h4 className="text-lg font-bold mb-3">Context Mastery Progress</h4>
+                        <div className="glass-card rounded-lg p-4 bg-purple-900 bg-opacity-30">
+                          <div className="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                              <div className="text-sm text-purple-300 mb-1">Signal Detection Skill</div>
+                              <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+                                <div className="h-full bg-green-500" style={{ width: '78%' }}></div>
+                              </div>
+                              <div className="flex justify-between text-xs mt-1">
+                                <span>Advanced</span>
+                                <span>78%</span>
+                              </div>
+                            </div>
+                            <div>
+                              <div className="text-sm text-purple-300 mb-1">Context Relevance Assessment</div>
+                              <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+                                <div className="h-full bg-yellow-500" style={{ width: '62%' }}></div>
+                              </div>
+                              <div className="flex justify-between text-xs mt-1">
+                                <span>Intermediate</span>
+                                <span>62%</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="text-center">
+                            <button className="px-4 py-2 bg-purple-800 bg-opacity-50 rounded-lg hover:bg-opacity-70 text-sm">
+                              Start New Exercise
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            
+            {/* NETWORK VIEW - Signal Network */}
+            {currentView === "network" && isLoggedIn && (
+              <div className="max-w-6xl mx-auto">
+                <div className="mb-8">
+                  <h2 className="text-3xl font-bold mb-4">Signal Network</h2>
+                  <p className="text-lg text-purple-200 mb-6">
+                    Tap into curated, high-signal insights from experts across domains, filtered for relevance.
+                  </p>
+                  
+                  {/* Signal Insights */}
+                  <div className="grid md:grid-cols-2 gap-6 mb-10">
+                    {networkInsights.map(insight => (
+                      <div key={insight.id} className="glass-card rounded-xl p-6 hover:shadow-lg transition-all duration-300">
+                        <div className="flex justify-between items-start mb-4">
+                          <div className="flex items-center">
+                            <span className="inline-block px-3 py-1 bg-purple-800 bg-opacity-50 rounded-lg text-sm mr-2">
+                              {insight.domain}
+                            </span>
+                            <div className="w-1 h-5 rounded-full mr-2" style={{ 
+                              backgroundColor: insight.relevance > 90 ? '#22c55e' : 
+                                              insight.relevance > 70 ? '#eab308' : '#ef4444'
+                            }}></div>
+                            <span className="text-sm">{insight.relevance}% Relevance</span>
+                          </div>
+                          <button className="text-purple-300 hover:text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                          </button>
+                        </div>
+                        
+                        <p className="mb-6 text-lg">"{insight.insight}"</p>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center mr-2">
+                              {insight.author.split(' ')[0][0] + insight.author.split(' ')[1][0]}
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium">{insight.author}</p>
+                              <p className="text-xs text-purple-300">{insight.role}</p>
+                            </div>
+                          </div>
+                          <button className="text-sm text-purple-300 hover:text-white">
+                            Apply to Decision →
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Domain Filter */}
+                  <div className="glass-card rounded-xl p-6 mb-10">
+                    <h3 className="text-xl font-bold mb-4">Filter by Domain</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {["All Domains", "Strategy", "Marketing", "Product", "Operations", "Research", "Sales", "Leadership", "Finance"].map(domain => (
+                        <button 
+                          key={domain}
+                          className={`px-4 py-2 rounded-lg text-sm ${domain === "All Domains" ? 'bg-white text-purple-900' : 'bg-purple-900 bg-opacity-50 hover:bg-opacity-70'}`}
+                        >
+                          {domain}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Signal Contribution */}
+                  <div className="glass-card rounded-xl p-6">
+                    <h3 className="text-xl font-bold mb-4">Contribute Your Insights</h3>
+                    <p className="text-purple-200 mb-4">
+                      Share high-signal insights from your domain of expertise with the Signal Network.
+                    </p>
+                    
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-purple-300 mb-2">Domain</label>
+                      <select className="w-full p-3 bg-purple-900 bg-opacity-50 rounded-lg border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <option value="">Select domain...</option>
+                        <option value="strategy">Strategy</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="product">Product</option>
+                        <option value="operations">Operations</option>
+                        <option value="research">Research</option>
+                        <option value="sales">Sales</option>
+                        <option value="leadership">Leadership</option>
+                        <option value="finance">Finance</option>
+                      </select>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-purple-300 mb-2">Your Insight</label>
+                      <textarea
+                        className="w-full p-3 bg-purple-900 bg-opacity-50 rounded-lg border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-24"
+                        placeholder="Share a specific, actionable insight from your domain expertise..."
+                      ></textarea>
+                      <p className="text-sm text-purple-300 mt-1">
+                        Great insights are specific, evidence-based, and actionable. Focus on what's not obvious.
+                      </p>
+                    </div>
+                    
+                    <div className="flex justify-end">
+                      <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg font-medium">
+                        Submit Insight
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {/* Login Modal */}
+            {showLoginModal && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="glass-card rounded-xl p-8 w-full max-w-md animate-fadeIn">
+                  <h3 className="text-2xl font-bold mb-6 text-center">Login to Signal Advantage</h3>
+                  
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-purple-300 mb-2">Email</label>
+                    <input
+                      type="email"
+                      className="w-full p-3 bg-purple-900 bg-opacity-50 rounded-lg border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      placeholder="your@email.com"
+                    />
+                  </div>
+                  
+                  <div className="mb-6">
+                    <label className="block text-sm font-medium text-purple-300 mb-2">Password</label>
+                    <input
+                      type="password"
+                      className="w-full p-3 bg-purple-900 bg-opacity-50 rounded-lg border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  
+                  <div className="flex flex-col space-y-3">
+                    <button
+                      onClick={toggleLogin}
+                      className="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg font-bold"
+                    >
+                      Log In
+                    </button>
+                    <button
+                      onClick={() => setShowLoginModal(false)}
+                      className="w-full py-3 bg-purple-900 bg-opacity-50 rounded-lg"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </main>
+          
+          {/* Footer */}
+          <footer className="container mx-auto px-4 py-6 text-center text-sm text-purple-300 relative z-10">
+            <p>© 2025 Signal Advantage | Context is the Competitive Edge in Knowledge Work</p>
+          </footer>
+        </div>
+      );
+    };
+    
+    ReactDOM.render(<SignalAdvantageApp />, document.getElementById('root'));
+  </script>
+</body>
+</html>
